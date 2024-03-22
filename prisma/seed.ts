@@ -27,6 +27,8 @@ async function main()
         },
     });
 
+    // const user1 = await prisma.
+
     console.log({blog1, blog2});
 }
 
