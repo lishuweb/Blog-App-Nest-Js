@@ -13,4 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+model blog {
+  id                Int           @id @default(autoincrement())
+  createdAt         DateTime      @default(now())
+  title             String        @db.VarChar(255)
+  author            String
+  likes             Int
+  url               String        @db.VarChar(255)
+}
