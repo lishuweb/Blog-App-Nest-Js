@@ -2,48 +2,55 @@ import { Injectable } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { blog } from '@prisma/client';
+import { Blog } from './blog.type';
 
 @Injectable()
 export class BlogService {
-  private blogs: blog[] = [];
   constructor(private prisma: PrismaService) {}
-  create(createBlogDto: CreateBlogDto) {
-    // return 'This action adds a new blog';
-    return this.prisma.blog.create({
+  //  initialize the prisma property of the BlogService class. The private keyword before the prisma property means that it can only 
+  // be accessed within the BlogService class.
+  async create(createBlogDto: CreateBlogDto) 
+  {
+    return await this.prisma.blog.create({
       data: createBlogDto
     })
   }
 
-  findDrafts(){
-    return this.prisma.blog.findMany({});
+  async findAll() 
+  {
+    return await this.prisma.blog.findMany({})
   }
 
-  findAll() {
-    // return `This action returns all blog`;
-    return this.prisma.blog.findMany({})
-  }
-
-  findOne(id: number) {
-    // return `This action returns a #${id} blog`;
-    return this.prisma.blog.findUnique({
+  async findOne(id: number): Promise<Blog>
+  {
+    return await this.prisma.blog.findUnique({
       where: {
         id: id
       }
     })
   }
 
-  update(id: number, updateBlogDto: UpdateBlogDto) {
-    // return `This action updates a #${id} blog`;
-    return this.prisma.blog.update({
+  async updateById(id: number, updateBlogDto: UpdateBlogDto)
+  {
+    return await this.prisma.blog.update({
+      where: {
+        id
+      },
+      data: updateBlogDto
+    });
+  }
+
+  async patch(id: number, updateBlogDto: UpdateBlogDto) 
+  {
+    return await this.prisma.blog.update({
       where: { id },
       data: updateBlogDto
     });
   }
 
-  remove(id: number) {
-    // return `This action removes a #${id} blog`;
-    return this.prisma.blog.delete({
+  async remove(id: number) 
+  {
+    return await this.prisma.blog.delete({
       where: { id }
     });
   }

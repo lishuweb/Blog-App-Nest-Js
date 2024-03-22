@@ -1,50 +1,108 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { BlogEntity } from './entities/blog.entity';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 
-@Controller('blog')
-@ApiTags('blog')
+@Controller('api/v1/blog')
+@ApiTags('Blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Post()
+  @ApiResponse({
+    status: 201,
+    description: "New Blog Created!"
+  })
   @ApiCreatedResponse({ type: BlogEntity })
-  create(@Body() createBlogDto: CreateBlogDto) {
-    return this.blogService.create(createBlogDto);
+  async create(@Body() createBlogDto: CreateBlogDto, @Res() res) {
+    const createBlog = await this.blogService.create(createBlogDto);
+    if(!createBlog)
+    {
+      throw new Error ("Error  Creating Blog");
+    }
+    res.json({
+      status: 201,
+      message: "Blog Created Successfully",
+      data: createBlog,
+    });
   }
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    description: "All Blogs are listed from database!"
+  })
   @ApiOkResponse({ type: BlogEntity, isArray: true })
-  findAll() {
+  async findAll( @Res () res ) {
     // return [{id: 0}]
-    return this.blogService.findAll();
-  }
-
-  @Get('drafts')
-  @ApiOkResponse({ type: BlogEntity, isArray: true })
-  findDrafts(){
-    return this.blogService.findDrafts();
+    const getBlogs = await this.blogService.findAll();
+    if(!getBlogs)
+    {
+      throw new Error ("Error Fetching Blogs From Database!");
+    }
+    res.json({
+     status: 200,
+     blogs: getBlogs
+    });
   }
 
   @Get(':id')
   @ApiOkResponse({ type: BlogEntity })
-  findOne(@Param('id') id: string) {
-    return this.blogService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res () res) {
+    const getBlogById = await this.blogService.findOne(+id);
+    if(!getBlogById)
+    {
+      throw new Error ("No Blog Found With Given ID!");
+    }
+    res.json({
+      status: 200,
+      getBlogById
+    });
+  }
+
+  @Put(':id')
+  @ApiResponse({ type: BlogEntity })
+  async updateById(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res )
+  {
+    const updatedData = await this.blogService.updateById(+id, updateBlogDto);
+    if(!updatedData)
+    {
+      throw new Error ("Cannot update with given id!");
+    }
+    res.json({
+      status: 200,
+      updatedData
+    });
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: BlogEntity })
-  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(+id, updateBlogDto);
+  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res) {
+    const patchBlog = await this.blogService.patch(+id, updateBlogDto);
+    if(!patchBlog)
+    {
+      throw new Error ("Update Failed! Please Try Again Later.");
+    }
+    res.json({
+      status: 200,
+      patchBlog
+    });
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: BlogEntity })
-  remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+  async remove(@Param('id') id: string, @Res () res) {
+    const deleteBlog = await this.blogService.remove(+id);
+    if(!deleteBlog)
+    {
+      throw new Error ("Failed to delete blog of given id!");
+    }
+    res.json({
+      status: 200,
+      message: "Blog deleted successfully!"
+    });
   }
 }
