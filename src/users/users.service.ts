@@ -1,26 +1,111 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { BlockUserDto, UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+// import { Prisma } from '@prisma/client';
+// import { User } from './user.type';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUserDto: CreateUserDto) {
+    return await this.prisma.user.create({
+      data: createUserDto
+    });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.prisma.user.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.prisma.user.findUnique({
+      where: {
+        id
+      }
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateById(id: number, updateUserDto: UpdateUserDto)
+  {
+    return await this.prisma.user.update({
+      where: {
+        id
+      },
+      data: updateUserDto
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) 
+  {
+    try{
+      const foundUser = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      });
+      if(!foundUser)
+      {
+        throw new Error ("User Not Found");
+      }
+      return await this.prisma.user.update({
+        where: { id },
+        data: updateUserDto
+      });
+    }
+    catch(error)
+    {
+      throw new Error (error);
+    }
+  }
+
+  async remove(id: number) 
+  {
+    try{
+      const foundUser = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      });
+      if(!foundUser)
+      {
+        throw new Error ("User not found based on the id!");
+      }
+      return await this.prisma.user.delete({
+        where: { id }
+      });
+    }
+    catch(error)
+    {
+      throw new Error (error);
+    }
+  }
+
+  async blockUser(id: number, details: BlockUserDto)
+  {
+    try{
+      const foundUser = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      });
+      if(!foundUser)
+      {
+        throw new Error ("User not found");
+      }
+      return await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: {
+          isArchive: details.isActive
+        }
+      });
+    }
+    catch(error)
+    {
+      throw new Error (error);
+    }
   }
 }

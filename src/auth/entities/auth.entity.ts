@@ -7,7 +7,7 @@ import { ApiProperty } from "@nestjs/swagger";
 //     USER
 //     ADMIN
 // }
-export class UserEntity implements user {
+export class AuthEntity implements user {
     @ApiProperty()
     id: number;
 

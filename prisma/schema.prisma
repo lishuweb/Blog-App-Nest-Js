@@ -24,9 +24,10 @@ model blog {
 
 model user {
   id                Int           @id @default(autoincrement())
+  name              String
   email             String        @unique
   password          String
-  roles             Role[]        @default([USER])
+  roles             Role          @default(USER)
   image             String
   isEmailVerified   Boolean       @default(false)
   isActive          Boolean       @default(false)
@@ -35,8 +36,15 @@ model user {
   updatedBy         Int           @default(0) 
 }
 
-enum Role 
-{
+enum Role {
   USER
   ADMIN
+}
+
+model auth {
+  id                Int           @id @default(autoincrement())
+  email             String        @unique
+  token             Int
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }

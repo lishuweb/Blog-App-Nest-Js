@@ -27,9 +27,23 @@ async function main()
         },
     });
 
-    // const user1 = await prisma.
+    const userData = {
+        name: "Jhamsikhel",
+        email: "jhamsikhel@gmail.com",
+        password: "jhamsikhel@1",
+        image: "jhamPic",
+      };
 
-    console.log({blog1, blog2});
+    const user1 = await prisma.user.upsert({
+        where: { email: "jhamsikhel@gmail.com" },
+        update: {},
+        create: {
+            ...userData,
+        },
+    });
+
+    console.log({ blog1, blog2 });
+    console.log({ user1 });
 }
 
 main()
