@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { mail } from 'utils/mail';
 import { generateOTP, verifyOTP } from 'utils/otp';
 import { BcryptService } from 'utils/bcrypt';
+import { LoginAuthDto } from './dto/create-auth.dto';
+import { generateJWT } from 'utils/jwt';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +13,16 @@ export class AuthService {
     private prisma: PrismaService,
     private bcrypt: BcryptService  
   ) {}
+
+  async getAuth() {
+    try{
+      return await this.prisma.auth.findMany({});
+    }
+    catch(error)
+    {
+      throw new Error (error);
+    }
+  }
 
   async create(payload: any) {
     // const {
@@ -91,6 +103,37 @@ export class AuthService {
       }
     });
     return 'Account Verification Successful!';
+  }
+
+  async login(payload: LoginAuthDto) 
+  {
+    const foundUser = await this.prisma.user.findUnique({
+      where: {
+        email: payload.email
+      }
+    });
+    console.log(foundUser, "foundUser");
+    if(!foundUser)
+    {
+      throw new Error("User  not Found!");
+    }
+    if(!foundUser.isEmailVerified && !foundUser.isActive)
+    {
+      throw new Error ("Email is not verified and is not active!");
+    }
+    const passwordCheck = await this.bcrypt.comparePassword(payload.password, foundUser.password);
+    console.log(passwordCheck, "passwordCheck");
+    if(passwordCheck)
+    {
+      const userForToken = {
+        email: foundUser.email,
+        id: foundUser.id,
+        name: foundUser.name
+      };
+
+      const accessToken = await generateJWT(userForToken);
+      return accessToken;
+    }
   }
 
 }

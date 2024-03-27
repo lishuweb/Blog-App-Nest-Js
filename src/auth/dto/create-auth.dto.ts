@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsAlphanumeric } from 'class-validator';
 
 export class CreateAuthDto {
-
     @IsString({ message: "Email should be in proper format" })
     @IsNotEmpty({ message: "Email is required" })
     @ApiProperty({ required: true })
@@ -12,9 +11,16 @@ export class CreateAuthDto {
     @IsNotEmpty({ message: "OTP Token is required" })
     @ApiProperty({ required: true })
     token: number
-
 };
 
-// export class VerifyAuthDto {
-//     @IsString({})
-// }
+export class LoginAuthDto {
+    @IsString({ message: "Email should be in proper format" })
+    @IsNotEmpty({ message: "Email is required" })
+    @ApiProperty({ required: true })
+    email: string
+
+    @IsAlphanumeric()
+    @IsNotEmpty({ message: "Password is required" })
+    @ApiProperty({ required: true })
+    password: string
+}

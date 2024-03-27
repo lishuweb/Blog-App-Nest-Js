@@ -8,8 +8,8 @@ export interface User {
     isEmailVerified?: boolean,
     isActive?: boolean,
     isArchive?: boolean,
-    createdBy?: boolean,
-    updatedBy?: boolean
+    createdBy?: number,
+    currentRole?: string
 };
 
 export enum Role {

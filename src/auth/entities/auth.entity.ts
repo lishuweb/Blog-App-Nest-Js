@@ -39,6 +39,5 @@ export class AuthEntity implements user {
     createdBy: number
 
     @ApiProperty()
-    updatedBy: number
-    
+    currentRole: Role
 }

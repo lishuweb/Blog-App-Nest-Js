@@ -33,7 +33,7 @@ model user {
   isActive          Boolean       @default(false)
   isArchive         Boolean       @default(false)
   createdBy         Int           @default(0)
-  updatedBy         Int           @default(0) 
+  currentRole       Role          @default(USER) 
 }
 
 enum Role {

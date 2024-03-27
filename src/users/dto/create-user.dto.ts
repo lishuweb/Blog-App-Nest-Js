@@ -50,10 +50,9 @@ export class CreateUserDto {
     @ApiProperty({ required: false })
     createdBy?: number
 
-    @IsNumber()
+    @IsString()
     @IsOptional()
     // @IsNotEmpty({ message: " is required" })
-    @ApiProperty({ required: false })
-    updatedBy?: number
-
+    @ApiProperty({ description:"Role" })
+    currentRole?: Role
 };

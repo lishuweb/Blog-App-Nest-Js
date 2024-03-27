@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res, UseInterceptors, UploadedFile, ParseFilePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res, UseInterceptors, UploadedFile, ParseFilePipe, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, BlockUserDto } from './dto/update-user.dto';
@@ -7,6 +7,7 @@ import { UserEntity } from './entities/user.entity';
 import { ApiCreatedResponse, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+// import { userValidation } from 'src/auth/guards/userValidationGuard';
 
 @Controller('api/v1/user')
 @ApiTags('users')
@@ -14,6 +15,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  // @UseGuards(new userValidation(["ADMIN"]))
   @ApiResponse({
     status: 201,
     description: "New User Created!"
@@ -43,24 +45,31 @@ export class UsersController {
       })
     )
     file: Express.Multer.File,
-    @Body() createUserDto: CreateUserDto, @Res () res
+    @Body() createUserDto: CreateUserDto, @Res () res, @Req() req
   ) {
     if(file)
     {
-      console.log("Hello");
+      // console.log("Hello");
       const uniqueSuffix = Date.now() + '.' + file.originalname.split('.')[1];
       createUserDto.image = uniqueSuffix;
     }
-    const response = await this.usersService.create(createUserDto);
-    if(!response)
-    {
-      throw new Error ("Error Creating User");
-    }
-    res.json({
-      status: 201,
-      message: "User Created Successfully",
-      data: response,
-    });
+      // const isAdmin = request.roles;
+      const isAdmin = req.user.roles;
+      console.log(isAdmin, "isAdmin");
+      createUserDto.createdBy = req.user.id;
+      console.log(req.user.id);
+      createUserDto.currentRole = req.user.roles;
+      console.log(req.user.roles);
+      const response = await this.usersService.create(createUserDto, isAdmin);
+      if(!response)
+      {
+        throw new Error ("Error Creating User");
+      }
+      res.json({
+        status: 201,
+        message: "User Created Successfully",
+        data: response,
+      });
   }
 
   @Get()

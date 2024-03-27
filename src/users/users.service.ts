@@ -2,17 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { BlockUserDto, UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { BcryptService } from 'utils/bcrypt';
 // import { Prisma } from '@prisma/client';
 // import { User } from './user.type';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+              private bcrypt: BcryptService  
+  ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    return await this.prisma.user.create({
-      data: createUserDto
-    });
+  async create(createUserDto: CreateUserDto, isAdmin: boolean) {
+    if(isAdmin)
+    {
+      const passwordHash = await this.bcrypt.bcryptPassword(createUserDto.password);
+      const newUser = await this.prisma.user.create({
+        data: {...createUserDto, password: passwordHash, isEmailVerified: true, isActive: true}
+      });
+      return newUser;
+    }
+    else 
+    {
+      throw new Error ("No Admin!");
+    }
   }
 
   async findAll() {
