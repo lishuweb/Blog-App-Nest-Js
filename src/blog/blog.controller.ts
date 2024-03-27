@@ -6,8 +6,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { BlogEntity } from './entities/blog.entity';
 import { ApiCreatedResponse, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 
-@Controller('api/v1/blog')
-@ApiTags('Blog')
+@Controller('/api/v1/blog')
+@ApiTags('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 

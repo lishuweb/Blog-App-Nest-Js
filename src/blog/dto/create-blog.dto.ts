@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsNotEmpty } from 'class-validator';
 // likewise zod validator
+// Data Transfer Object
 export class CreateBlogDto {
     @IsString({ message: 'Ttile should be string' })
     @IsNotEmpty({ message: 'Title is required' })

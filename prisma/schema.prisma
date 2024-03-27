@@ -21,3 +21,31 @@ model blog {
   likes             Int
   url               String        @db.VarChar(255)
 }
+
+model user {
+  id                Int           @id @default(autoincrement())
+  name              String
+  email             String        @unique
+  password          String
+  roles             Role          @default(USER)
+  image             String
+  isEmailVerified   Boolean       @default(false)
+  isActive          Boolean       @default(false)
+  isArchive         Boolean       @default(false)
+  createdBy         Int           @default(0)
+  updatedBy         Int           @default(7)
+  currentRole       Role          @default(USER) 
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model auth {
+  id                Int           @id @default(autoincrement())
+  email             String        @unique
+  token             Int
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
