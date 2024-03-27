@@ -9,6 +9,7 @@ export interface User {
     isActive?: boolean,
     isArchive?: boolean,
     createdBy?: number,
+    updatedBy?: number,
     currentRole?: string
 };
 

@@ -53,6 +53,39 @@ export class UsersService {
     }
   }
 
+  async activeVerified(isAdmin: boolean)
+  {
+    if(isAdmin)
+    {
+      return await this.prisma.user.findMany({
+        where: {
+          isEmailVerified: true,
+          isActive: true
+        }
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
+  async archiveUsers(isAdmin: boolean)
+  {
+    if(isAdmin)
+    {
+      return await this.prisma.user.findMany({
+        where: {
+          isArchive: true
+        }
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
   async updateById(id: number, updateUserDto: UpdateUserDto, isAdmin: boolean)
   {
     if(isAdmin)

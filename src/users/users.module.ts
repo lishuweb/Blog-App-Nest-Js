@@ -21,7 +21,9 @@ export class UsersModule implements NestModule {
     // });
     consumer.apply(userValidationMiddleware).forRoutes(
       "api/v1/user",
-      "api/v1/user/:id"
+      "api/v1/user/:id",
+      "api/v1/user/activeVerified",
+      "api/v1/user/archiveUsers"
     );
   }
 }

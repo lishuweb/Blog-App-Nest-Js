@@ -3,7 +3,6 @@ import { IsString, IsNotEmpty, IsAlphanumeric, IsBoolean, IsOptional, IsNumber }
 import { Role } from "@prisma/client";
 
 export class CreateUserDto {
-
     @IsString({ message: "Name should be string" })
     @IsNotEmpty({ message: "Name is required" })
     @ApiProperty({ required: true })
@@ -49,6 +48,12 @@ export class CreateUserDto {
     // @IsNotEmpty({ message: " is required" })
     @ApiProperty({ required: false })
     createdBy?: number
+
+    @IsNumber()
+    @IsOptional()
+    // @IsNotEmpty({ message: " is required" })
+    @ApiProperty({ required: false })
+    updatedBy?: number
 
     @IsString()
     @IsOptional()

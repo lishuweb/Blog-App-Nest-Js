@@ -39,6 +39,9 @@ export class UserEntity implements user {
     createdBy: number
 
     @ApiProperty()
+    updatedBy: number
+
+    @ApiProperty()
     currentRole: Role
     
 }

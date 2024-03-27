@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res, UseInterceptors, UploadedFile, ParseFilePipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res, UseInterceptors, UploadedFile, ParseFilePipe, Req, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, BlockUserDto } from './dto/update-user.dto';
@@ -72,6 +72,38 @@ export class UsersController {
       });
   }
 
+  @Get('activeVerified')
+  @ApiResponse({ type: UserEntity })
+  async getActiveVerified(@Res () res, @Req() req)
+  {
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.activeVerified(isAdmin);
+    if(!response)
+    {
+      throw new NotFoundException( "No Active and Verified Users Found!" );
+    }
+    res.json({
+      status: 200,
+      response
+    });
+  }
+
+  @Get('archiveUsers')
+  @ApiResponse({ type: UserEntity })
+  async getArchivedUsers(@Res () res, @Req() req)
+  {
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.archiveUsers(isAdmin);
+    if(!response)
+    {
+      throw new NotFoundException( "No Archived Users Found!" );
+    }
+    res.json({
+      status: 200,
+      response
+    });
+  }
+
   @Get()
   @ApiResponse({
     status: 200,
@@ -113,6 +145,9 @@ export class UsersController {
   async updateById(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req)
   {
     const isAdmin = (req as any).userRoles;
+    updateUserDto.createdBy = (req as any).userId;
+    updateUserDto.updatedBy = (req as any).userId;
+    console.log((req as any).userId);
     const response = await this.usersService.updateById(+id, updateUserDto, isAdmin);
     if(!response)
     {
@@ -129,6 +164,8 @@ export class UsersController {
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req) 
   {
     const isAdmin = (req as any).userRoles;
+    updateUserDto.createdBy = (req as any).userId;
+    updateUserDto.updatedBy = (req as any).userId;
     const response = await this.usersService.update(+id, updateUserDto, isAdmin);
     if(!response)
     {
@@ -160,7 +197,9 @@ export class UsersController {
   @ApiResponse({ type: UserEntity })
   async blockUser(@Param('id') id: string, @Body() blockUserDto: BlockUserDto, @Res () res, @Req() req)
   {
-    const isAdmin = (req as any).userRoles
+    const isAdmin = (req as any).userRoles;
+    blockUserDto.createdBy = (req as any).userId;
+    blockUserDto.updatedBy = (req as any).userId;
     const response = await this.usersService.blockUser(+id, blockUserDto, isAdmin);
     if(!response)
     {
