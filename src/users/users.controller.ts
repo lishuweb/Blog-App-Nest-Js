@@ -54,12 +54,12 @@ export class UsersController {
       createUserDto.image = uniqueSuffix;
     }
       // const isAdmin = request.roles;
-      const isAdmin = req.user.roles;
+      const isAdmin = (req as any).userRoles;
       console.log(isAdmin, "isAdmin");
-      createUserDto.createdBy = req.user.id;
-      console.log(req.user.id);
-      createUserDto.currentRole = req.user.roles;
-      console.log(req.user.roles);
+      createUserDto.createdBy = (req as any).userId;
+      console.log((req as any).userId);
+      createUserDto.currentRole = (req as any).userRoles;
+      console.log((req as any).userRoles);
       const response = await this.usersService.create(createUserDto, isAdmin);
       if(!response)
       {

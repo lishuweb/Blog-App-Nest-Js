@@ -37,11 +37,14 @@ export class userValidationMiddleware implements NestMiddleware {
             }
             // (req as any).userId = userData.id;
             // (req as any).userRole = userData.roles;
-            req.user = {
-                id: (await userData).id,
-                roles: (await userData).roles
-            }
-            console.log(req.user, "reqUser");
+            // req.user = {
+            //     id: (await userData).id,
+            //     roles: (await userData).roles
+            // }
+            // console.log(req.user, "reqUser");
+
+            (req as any).userId = userData.id;
+            (req as any).userRoles = userData.roles;
 
             const inputRole = ["ADMIN", "USER"];
 
