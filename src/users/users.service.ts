@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { BlockUserDto, UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -23,101 +23,144 @@ export class UsersService {
     }
     else 
     {
-      throw new Error ("No Admin!");
+      throw new UnauthorizedException("You do not have permission to perform this action.");
     }
   }
 
-  async findAll() {
-    return await this.prisma.user.findMany({});
-  }
-
-  async findOne(id: number) {
-    return await this.prisma.user.findUnique({
-      where: {
-        id
-      }
-    });
-  }
-
-  async updateById(id: number, updateUserDto: UpdateUserDto)
-  {
-    return await this.prisma.user.update({
-      where: {
-        id
-      },
-      data: updateUserDto
-    });
-  }
-
-  async update(id: number, updateUserDto: UpdateUserDto) 
-  {
-    try{
-      const foundUser = await this.prisma.user.findUnique({
-        where: {
-          id
-        }
-      });
-      if(!foundUser)
-      {
-        throw new Error ("User Not Found");
-      }
-      return await this.prisma.user.update({
-        where: { id },
-        data: updateUserDto
-      });
-    }
-    catch(error)
+  async findAll(isAdmin: boolean) {
+    if(isAdmin)
     {
-      throw new Error (error);
+      return await this.prisma.user.findMany({});
     }
-  }
-
-  async remove(id: number) 
-  {
-    try{
-      const foundUser = await this.prisma.user.findUnique({
-        where: {
-          id
-        }
-      });
-      if(!foundUser)
-      {
-        throw new Error ("User not found based on the id!");
-      }
-      return await this.prisma.user.delete({
-        where: { id }
-      });
-    }
-    catch(error)
+    else 
     {
-      throw new Error (error);
+      throw new UnauthorizedException("You do not have permission to perform this action.");
     }
   }
 
-  async blockUser(id: number, details: BlockUserDto)
-  {
-    try{
-      const foundUser = await this.prisma.user.findUnique({
+  async findOne(id: number, isAdmin: boolean) {
+    if(isAdmin)
+    {
+      return await this.prisma.user.findUnique({
         where: {
           id
         }
       });
-      if(!foundUser)
-      {
-        throw new Error ("User not found");
-      }
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
+  async updateById(id: number, updateUserDto: UpdateUserDto, isAdmin: boolean)
+  {
+    if(isAdmin)
+    {
       return await this.prisma.user.update({
         where: {
           id
         },
-        data: {
-          isArchive: details.isActive
-        }
+        data: updateUserDto
       });
     }
-    catch(error)
+    else 
     {
-      throw new Error (error);
+      throw new UnauthorizedException("You do not have permission to perform this action.");
     }
   }
+
+  async update(id: number, updateUserDto: UpdateUserDto, isAdmin: boolean) 
+  {
+    if(isAdmin)
+    {
+      try{
+        const foundUser = await this.prisma.user.findUnique({
+          where: {
+            id
+          }
+        });
+        if(!foundUser)
+        {
+          throw new Error ("User Not Found");
+        }
+        return await this.prisma.user.update({
+          where: { id },
+          data: updateUserDto
+        });
+      }
+      catch(error)
+      {
+        throw new Error (error);
+      }
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
+  async remove(id: number, isAdmin: boolean) 
+  {
+    if(isAdmin)
+    {
+      try{
+        const foundUser = await this.prisma.user.findUnique({
+          where: {
+            id
+          }
+        });
+        if(!foundUser)
+        {
+          throw new Error ("User not found based on the id!");
+        }
+        return await this.prisma.user.delete({
+          where: { id }
+        });
+      }
+      catch(error)
+      {
+        throw new Error (error);
+      }
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
+  async blockUser(id: number, details: BlockUserDto, isAdmin: boolean)
+  {
+    if(isAdmin)
+    {
+      try{
+        const foundUser = await this.prisma.user.findUnique({
+          where: {
+            id
+          }
+        });
+        if(!foundUser)
+        {
+          throw new Error ("User not found");
+        }
+        return await this.prisma.user.update({
+          where: {
+            id
+          },
+          data: {
+            isArchive: details.isActive
+          }
+        });
+      }
+      catch(error)
+      {
+        throw new Error (error);
+      }
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action.");
+    }
+  }
+
 }

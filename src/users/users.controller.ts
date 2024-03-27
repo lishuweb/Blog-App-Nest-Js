@@ -78,8 +78,10 @@ export class UsersController {
     description: "All Users are listed from database!"
   })
   @ApiOkResponse({ type: UserEntity, isArray: true })
-  async findAll(@Res () res) {
-    const response = await this.usersService.findAll();
+  async findAll(@Res () res, @Req() req) 
+  {
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.findAll(isAdmin);
     if(!response)
     {
       throw new Error ("Error Fetching Users From Database!");
@@ -92,8 +94,10 @@ export class UsersController {
 
   @Get(':id')
   @ApiOkResponse({ type: UserEntity })
-  async findOne(@Param('id') id: string, @Res () res) {
-    const response = await this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res () res, @Req() req) 
+  {
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.findOne(+id, isAdmin);
     if(!response)
     {
       throw new Error ("No User Found With Given ID!");
@@ -106,9 +110,10 @@ export class UsersController {
 
   @Put(':id')
   @ApiResponse({ type: UserEntity })
-  async updateById(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res )
+  async updateById(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req)
   {
-    const response = await this.usersService.updateById(+id, updateUserDto);
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.updateById(+id, updateUserDto, isAdmin);
     if(!response)
     {
       throw new Error ("Cannot update with given id!");
@@ -121,8 +126,10 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOkResponse({ type: UserEntity })
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res) {
-    const response = await this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req) 
+  {
+    const isAdmin = (req as any).userRoles;
+    const response = await this.usersService.update(+id, updateUserDto, isAdmin);
     if(!response)
     {
       throw new Error ("Update Failed! Please Try Again Later.");
@@ -135,8 +142,10 @@ export class UsersController {
 
   @Delete(':id')
   @ApiOkResponse({ type: UserEntity })
-  async remove(@Param('id') id: string, @Res() res) {
-    const response = await this.usersService.remove(+id);
+  async remove(@Param('id') id: string, @Res() res, @Req() req) 
+  {
+    const isAdmin = (req as any).userRoles
+    const response = await this.usersService.remove(+id, isAdmin);
     if(!response)
     {
       throw new Error ("Failed to delete blog of given id!");
@@ -149,9 +158,10 @@ export class UsersController {
 
   @Put(':id')    //User Block - isArchive: true
   @ApiResponse({ type: UserEntity })
-  async blockUser(@Param('id') id: string, @Body() blockUserDto: BlockUserDto, @Res () res )
+  async blockUser(@Param('id') id: string, @Body() blockUserDto: BlockUserDto, @Res () res, @Req() req)
   {
-    const response = await this.usersService.blockUser(+id, blockUserDto);
+    const isAdmin = (req as any).userRoles
+    const response = await this.usersService.blockUser(+id, blockUserDto, isAdmin);
     if(!response)
     {
       throw new Error ("Cannot update with given id!");

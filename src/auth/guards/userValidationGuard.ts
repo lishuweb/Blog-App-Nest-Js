@@ -19,7 +19,7 @@ export class userValidationMiddleware implements NestMiddleware {
             console.log(token, "token");
             if(!token)
             {
-                throw new HttpException('Token not available!', HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new HttpException('Token is missing!', HttpStatus.INTERNAL_SERVER_ERROR);
             }
             const decodedToken = await verifyJWT(token) as JwtPayload;
             console.log(decodedToken, "decodedToken");
