@@ -1,6 +1,6 @@
-import { Controller, Post, Body, UploadedFile, ParseFilePipe, Res, UseInterceptors, Get, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, Put, UploadedFile, ParseFilePipe, Res, UseInterceptors, Get, HttpStatus, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, LoginAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, LoginAuthDto, ForgotPasswordTokenDto, ForgotPasswordDto, ChangePasswordTokenDto, ChangePasswordDto } from './dto/create-auth.dto';
 import { ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entities/auth.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -111,4 +111,84 @@ export class AuthController {
       data: response,
     });
   }
+
+  @Post('forgotPasswordToken')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: 200,
+    description: "Forgot Password token sent!",
+  })
+  async forgotPasswordToken(@Body() forgotPasswordTokenDto: ForgotPasswordTokenDto, @Res () res)
+  {
+    const response = await this.authService.forgotPasswordToken(forgotPasswordTokenDto.email);
+    if(!response)
+    {
+      throw new Error ("Error in forgot password token!");
+    }
+    res.json({
+      status: 200,
+      message: "Forgot Password token sent!",
+      data: response,
+    });
+  }
+
+  @Post('forgotPassword')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: 200,
+    description: "Forgot Password Done!",
+  })
+  async forgotPassword(@Body() forgotPassword: ForgotPasswordDto, @Res() res)
+  {
+    const response = await this.authService.forgotPassword(forgotPassword);
+    if(!response)
+    {
+      throw new Error ("Error in forgot password!");
+    }
+    res.json({
+      status: 200,
+      message: "Forgot Password Done!",
+      data: response,
+    });
+  }
+
+  @Post("changePasswordToken")
+  @ApiResponse({
+    status: 200,
+    description: "Change password token sent!"
+  })
+  async changePasswordToken(@Body() changePasswordTokenDto: ChangePasswordTokenDto, @Res () res)
+  {
+    const response = await this.authService.changePasswordToken(changePasswordTokenDto);
+    if(!response)
+    {
+      throw new Error ("Error in change password token!");
+    }
+    res.json({
+      status: 200,
+      message: "Change password token sent!",
+      data: response
+    });
+  }
+
+  @Put('changePassword')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: 200,
+    description: "Change password done!"
+  })
+  async changePassword(@Body() changePasswordDto: ChangePasswordDto, @Res () res)
+  {
+    const response = await this.authService.changePassword(changePasswordDto);
+    if(!response)
+    {
+      throw new Error ("Error in change password!");
+    }
+    res.json({
+      status: 200,
+      message: "Change Password Done!",
+      data: response,
+    });
+  }
+
 }

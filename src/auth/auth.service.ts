@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { mail } from 'utils/mail';
 import { generateOTP, verifyOTP } from 'utils/otp';
 import { BcryptService } from 'utils/bcrypt';
-import { LoginAuthDto } from './dto/create-auth.dto';
+import { ChangePasswordDto, ChangePasswordTokenDto, ForgotPasswordDto, LoginAuthDto } from './dto/create-auth.dto';
 import { generateJWT } from 'utils/jwt';
 
 @Injectable()
@@ -134,6 +134,154 @@ export class AuthService {
       const accessToken = await generateJWT(userForToken);
       return accessToken;
     }
+  }
+
+  async forgotPasswordToken(email: string)
+  {
+    const isUser = await this.prisma.user.findUnique({
+      where: {
+        email,
+        isEmailVerified: true,
+        isActive: true
+      }
+    });
+    console.log(isUser, "user forgot password");
+    if(!isUser)
+    {
+      throw new NotFoundException(`User not found for email: ${email}`);
+    }
+    const token = generateOTP();
+    await this.prisma.auth.create({
+      data: {
+        email: isUser.email,
+        token: Number(token)
+      } 
+    });
+    await mail(email, +token);
+    return true;
+  }
+
+  async forgotPassword(payload: ForgotPasswordDto)
+  {
+    const checkUser = await this.prisma.auth.findUnique({
+      where: {
+        email: payload.email
+      }
+    });
+    if(!checkUser)
+    {
+      throw new NotFoundException(`User not found for email: ${payload.email}`);
+    }
+    const isToken = await verifyOTP(String(payload.token));
+    if(!isToken)
+    {
+      throw new Error("Invalid OTP Token!");
+    }
+    const isMatch = checkUser.token === payload.token;
+    if(!isMatch)
+    {
+      throw new Error("OTP Token Mismatched!");
+    }
+    const passwordHash = await this.bcrypt.bcryptPassword(payload.password);
+    await this.prisma.user.update({
+      where: {
+        email: checkUser.email
+      },
+      data: {
+        password: passwordHash
+      }
+    });
+    await this.prisma.auth.delete({
+      where: {
+        email: checkUser.email
+      }
+    });
+    return true;
+  }
+
+  async changePasswordToken(payload: ChangePasswordTokenDto)
+  {
+    const checkUser = await this.prisma.user.findUnique({
+      where: {
+        email: payload.email,
+        isEmailVerified: true,
+        isActive: true
+      }
+    });
+    if(!checkUser)
+    {
+      throw new NotFoundException(`User not found for email: ${payload.email}`);
+    }
+    const token = generateOTP();
+    await this.prisma.auth.create({
+      data: {
+        email: checkUser.email,
+        token: Number(token)
+      }
+    });
+    await mail(checkUser.email, +token);
+    return true;
+  }
+
+  async changePassword(payload: ChangePasswordDto) 
+  {
+    console.log(payload, "payload")
+    const checkUser = await this.prisma.auth.findUnique({
+      where: {
+        email: payload.email
+      }
+    });
+    console.log(checkUser, "checkUser");
+    if(!checkUser)
+    {
+      throw new NotFoundException(`User not found for email: ${payload.email}`);
+    }
+    console.log(typeof payload.token);
+    console.log(typeof checkUser.token);
+    const isValid = await verifyOTP(String(payload.token));
+    console.log(isValid, 'isValid');
+    if(!isValid)
+    {
+      throw new  BadRequestException('Invalid OTP');
+    }
+    const checkToken = checkUser.token === payload.token;
+    console.log(checkToken, "checkToken");
+    if(!checkToken)
+    {
+      throw new BadRequestException('Token does not match');
+    }
+    const registerUser = await this.prisma.user.findUnique({
+      where: {
+        email: payload.email,
+        isEmailVerified: true,
+        isActive: true
+      }
+    });
+    console.log(registerUser, "registerUser");
+    if(!registerUser)
+    {
+      throw new NotFoundException(`User not found for email: ${payload.email}`);
+    }
+    const checkPassword = await this.bcrypt.comparePassword(payload.oldPassword, registerUser.password);
+    if(!checkPassword)
+    {
+      throw new BadRequestException('Incorrect password.');
+    }
+    const passwordHash = await this.bcrypt.bcryptPassword(payload.newPassword);
+    await this.prisma.user.update({
+      where: {
+        email: payload.email
+      },
+      data: {
+        password: passwordHash
+      }
+    });
+    await this.prisma.auth.delete({
+      where: {
+        email: payload.email
+      }
+    });
+    return true;
   }
 
 }

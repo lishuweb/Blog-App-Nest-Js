@@ -10,7 +10,7 @@ dotenv.config();
 export const generateOTP = () => {
     totp.options = {
         digits: 6,
-        step: 300
+        step: 600
     };
     return totp.generate(process.env.OTP_SECRET);
 };
@@ -18,7 +18,7 @@ export const generateOTP = () => {
 export const verifyOTP = async (token: string) => {
     totp.options = {
         digits: 6,
-        step: 300
+        step: 600
     };
     const isValid = totp.check(token, process.env.OTP_SECRET);
     return isValid;
