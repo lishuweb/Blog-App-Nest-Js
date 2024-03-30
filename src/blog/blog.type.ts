@@ -1,3 +1,5 @@
+// import { user } from "@prisma/client";
+
 export interface Blog {
     id?: number;
     createdAt?: Date; 
@@ -5,4 +7,7 @@ export interface Blog {
     author?: string;
     likes: number;
     url: string;
+    userId?: number;
+    blogCreator?: number;
+    blogUpdator?: number;
 }

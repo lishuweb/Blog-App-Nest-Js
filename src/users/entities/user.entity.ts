@@ -43,5 +43,14 @@ export class UserEntity implements user {
 
     @ApiProperty()
     currentRole: Role
+
+    @ApiProperty()
+    userId: number
+
+    @ApiProperty()
+    blogCreator: string
+
+    @ApiProperty()
+    blogUpdator: number
     
 }

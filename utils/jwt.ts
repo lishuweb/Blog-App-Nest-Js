@@ -1,4 +1,5 @@
 import * as jwt from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
 export const generateJWT = (userData: any) => {
     if(!process.env.ACCESS_TOKEN_SECRET)
@@ -10,5 +11,5 @@ export const generateJWT = (userData: any) => {
 };
 
 export const verifyJWT = (token: string) => {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as JwtPayload;
 }

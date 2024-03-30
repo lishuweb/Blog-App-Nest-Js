@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Res, Req } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { BlogEntity } from './entities/blog.entity';
 import { ApiCreatedResponse, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 
-@Controller('/api/v1/blog')
+@Controller('api/v1/blog')
 @ApiTags('blog')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
@@ -17,8 +17,10 @@ export class BlogController {
     description: "New Blog Created!"
   })
   @ApiCreatedResponse({ type: BlogEntity })
-  async create(@Body() createBlogDto: CreateBlogDto, @Res() res) {
-    const createBlog = await this.blogService.create(createBlogDto);
+  async create(@Body() createBlogDto: CreateBlogDto, @Res() res, @Req () req) {
+    const id = req.body.userId;
+    console.log(id, "id from controllers");
+    const createBlog = await this.blogService.create(createBlogDto, id);
     if(!createBlog)
     {
       throw new Error ("Error  Creating Blog");
@@ -65,8 +67,9 @@ export class BlogController {
 
   @Put(':id')
   @ApiResponse({ type: BlogEntity })
-  async updateById(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res )
+  async updateById(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res)
   {
+    // const name = (req as any).userName; 
     const updatedData = await this.blogService.updateById(+id, updateBlogDto);
     if(!updatedData)
     {

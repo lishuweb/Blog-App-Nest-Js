@@ -1,5 +1,6 @@
 import { blog } from "@prisma/client";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
 
 export class BlogEntity implements blog {
     @ApiProperty()
@@ -19,4 +20,16 @@ export class BlogEntity implements blog {
 
     @ApiProperty()
     url: string
+
+    @IsOptional()
+    @ApiProperty()
+    userId: number;
+
+    @IsOptional()
+    @ApiProperty()
+    blogCreator: number;
+
+    @IsOptional()
+    @ApiProperty()
+    blogUpdator: number;
 }

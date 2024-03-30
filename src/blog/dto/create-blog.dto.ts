@@ -21,4 +21,19 @@ export class CreateBlogDto {
     @IsNotEmpty({ message: 'Url is required' })
     @ApiProperty({ required: true })
     url: string
+
+    // @IsNumber()
+    // @IsOptional()
+    // @ApiProperty({ required: false })
+    // userId: number
+
+    // @IsNumber()
+    // @IsOptional()
+    // @ApiProperty({ required: false })
+    // blogCreator: number
+
+    // @IsNumber()
+    // @IsOptional()
+    // @ApiProperty({ required: false })
+    // blogUpdator: number
 }

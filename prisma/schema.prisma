@@ -20,6 +20,9 @@ model blog {
   author            String
   likes             Int
   url               String        @db.VarChar(255)
+  userId            Int           
+  blogCreator       user          @relation(fields: [userId], references: [id])
+  blogUpdator       Int           @default(0)
 }
 
 model user {
@@ -35,6 +38,7 @@ model user {
   createdBy         Int           @default(0)
   updatedBy         Int           @default(7)
   currentRole       Role          @default(USER) 
+  blogs             blog[]
 }
 
 enum Role {

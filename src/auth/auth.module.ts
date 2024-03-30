@@ -10,3 +10,4 @@ import { BcryptService } from 'utils/bcrypt';
   providers: [AuthService, BcryptService],
 })
 export class AuthModule {}
+

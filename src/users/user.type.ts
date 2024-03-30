@@ -10,7 +10,10 @@ export interface User {
     isArchive?: boolean,
     createdBy?: number,
     updatedBy?: number,
-    currentRole?: string
+    currentRole?: string,
+    userId?: number, 
+    blogCreator?: string,
+    blogUpdator?: number
 };
 
 export enum Role {
