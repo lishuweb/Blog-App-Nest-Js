@@ -38,9 +38,11 @@ export class BlogController {
     description: "All Blogs are listed from database!"
   })
   @ApiOkResponse({ type: BlogEntity, isArray: true })
-  async findAll( @Res () res ) {
+  async findAll( @Res () res, @Req () req ) {
     // return [{id: 0}]
-    const getBlogs = await this.blogService.findAll();
+    const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "Admin for blog GET");
+    const getBlogs = await this.blogService.findAll(isAdmin);
     if(!getBlogs)
     {
       throw new Error ("Error Fetching Blogs From Database!");
@@ -53,8 +55,13 @@ export class BlogController {
 
   @Get(':id')
   @ApiOkResponse({ type: BlogEntity })
-  async findOne(@Param('id') id: string, @Res () res) {
-    const getBlogById = await this.blogService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res () res, @Req () req) 
+  {
+    const checkId = (req as any).userId;                  //logged in user's ID
+    console.log(checkId, "Id of user for BLOG");
+    const isAdmin = (req as any).userRoles;               //logged in user's ROLE
+    console.log(isAdmin, "Admin for blog GET");
+    const getBlogById = await this.blogService.findOne(+id, checkId, isAdmin);
     if(!getBlogById)
     {
       throw new Error ("No Blog Found With Given ID!");

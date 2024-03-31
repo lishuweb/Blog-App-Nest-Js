@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
-import { verifyJWT } from "../../../utils/jwt";
+import { generateJWT, verifyJWT, verifyRefreshToken } from "../../../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 
 @Injectable()
@@ -13,6 +13,9 @@ export class tokenExtractorMiddleware implements NestMiddleware
         }
         const accessToken = req.headers.authorization.split(' ')[1];
         console.log(accessToken, "AccessToken");
+
+        const refreshToken = req.headers["x-authorization"];
+        console.log(refreshToken, "RefreshToken");
 
         const isValid = await verifyJWT(accessToken) as JwtPayload;
         console.log(isValid, "isValidAccessToken");
@@ -28,7 +31,24 @@ export class tokenExtractorMiddleware implements NestMiddleware
         // next(); 
         else 
         {
-            throw new Error ("Invalid Token");
+            const decodedToken = verifyRefreshToken(refreshToken);
+            console.log(decodedToken, "decodedToken");
+            if(decodedToken)
+            {
+                const userData = {
+                    id: decodedToken.id,
+                    email: decodedToken.email
+                };
+
+                const newAccessToken = generateJWT(userData);
+                res.setHeader("x-access-token", newAccessToken);
+                req.body.userId = decodedToken.id;
+            }
+            if(!decodedToken)
+            {
+                throw new Error ("Token Expired, Please Login!");
+            }
+            next();
         }
     }
 }

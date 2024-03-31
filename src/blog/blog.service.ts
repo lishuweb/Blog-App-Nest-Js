@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -21,18 +21,32 @@ export class BlogService {
     })
   }
 
-  async findAll() 
+  async findAll(isAdmin: string) 
   {
-    return await this.prisma.blog.findMany({})
+    if(isAdmin === "ADMIN")
+    {
+      return await this.prisma.blog.findMany({});
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action."); 
+    }
   }
 
-  async findOne(id: number)
+  async findOne(id: number, checkId: number, isAdmin: string)
   {
-    return await this.prisma.blog.findUnique({
-      where: {
-        id: id
-      }
-    })
+    if(checkId === id || isAdmin === "ADMIN")
+    {
+      return await this.prisma.blog.findUnique({
+        where: {
+          id: id
+        }
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action."); 
+    }
   }
 
   async updateById(id: number, updateBlogDto: UpdateBlogDto)

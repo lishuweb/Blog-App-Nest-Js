@@ -23,11 +23,11 @@ export class userValidationMiddleware implements NestMiddleware {
             }
             const decodedToken = await verifyJWT(token) as JwtPayload;
             console.log(decodedToken, "decodedToken");
-            const { userEmail } = decodedToken;
-            console.log(userEmail, "userEmail");
+            const { email } = decodedToken;
+            console.log(email, "email");
             const userData =  await this.prisma.user.findUnique({
                 where: {
-                    email: userEmail
+                    email: email
                 }
             });
             console.log(userData, "userData");

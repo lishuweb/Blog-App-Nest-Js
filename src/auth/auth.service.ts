@@ -4,7 +4,7 @@ import { mail } from 'utils/mail';
 import { generateOTP, verifyOTP } from 'utils/otp';
 import { BcryptService } from 'utils/bcrypt';
 import { ChangePasswordDto, ChangePasswordTokenDto, ForgotPasswordDto, LoginAuthDto } from './dto/create-auth.dto';
-import { generateJWT } from 'utils/jwt';
+import { generateJWT, generateRefreshToken } from 'utils/jwt';
 
 @Injectable()
 export class AuthService {
@@ -132,7 +132,13 @@ export class AuthService {
       };
 
       const accessToken = await generateJWT(userForToken);
-      return accessToken;
+      const refreshToken = await generateRefreshToken(userForToken);
+      // return accessToken;
+      return {
+        userForToken,
+        accessToken,
+        refreshToken
+      };
     }
   }
 

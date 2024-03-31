@@ -3,6 +3,8 @@ import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { tokenExtractorMiddleware } from 'src/auth/guards/tokenExtractor';
+import { userValidationMiddleware } from 'src/auth/guards/userValidationGuard';
+import { RequestMethod } from '@nestjs/common';
 
 @Module({
   controllers: [BlogController],
@@ -16,6 +18,14 @@ export class BlogModule implements NestModule {
     consumer.apply(tokenExtractorMiddleware).forRoutes(
       "api/v1/blog",
       "api/v1/blog/:id",
+    );
+
+    consumer.apply(userValidationMiddleware).forRoutes(
+      { path: 'api/v1/blog', method: RequestMethod.GET }
+    );
+
+    consumer.apply(userValidationMiddleware).forRoutes(
+      { path: 'api/v1/blog/:id', method: RequestMethod.GET }
     );
   }
 }
