@@ -25,7 +25,10 @@ export class BlogModule implements NestModule {
     );
 
     consumer.apply(userValidationMiddleware).forRoutes(
-      { path: 'api/v1/blog/:id', method: RequestMethod.GET }
+      { path: 'api/v1/blog/:id', method: RequestMethod.GET },
+      { path: "api/v1/blog/:id", method: RequestMethod.PUT },
+      { path: "api/v1/blog/:id", method: RequestMethod.PATCH },
+      { path: "api/v1/blog/:id", method: RequestMethod.DELETE }
     );
   }
 }

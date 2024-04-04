@@ -74,10 +74,14 @@ export class BlogController {
 
   @Put(':id')
   @ApiResponse({ type: BlogEntity })
-  async updateById(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res)
+  async updateById(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res() res, @Req () req)
   {
-    // const name = (req as any).userName; 
-    const updatedData = await this.blogService.updateById(+id, updateBlogDto);
+    const checkId = (req as any).userId;                  //logged in user's ID
+    // console.log(checkId, "Id of user for BLOG");
+    const isAdmin = (req as any).userRoles;               //logged in user's ROLE
+    // console.log(isAdmin, "Admin for blog GET");
+
+    const updatedData = await this.blogService.updateById(+id, updateBlogDto, checkId, isAdmin);
     if(!updatedData)
     {
       throw new Error ("Cannot update with given id!");
@@ -90,8 +94,13 @@ export class BlogController {
 
   @Patch(':id')
   @ApiOkResponse({ type: BlogEntity })
-  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res) {
-    const patchBlog = await this.blogService.patch(+id, updateBlogDto);
+  async update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto, @Res () res, @Req () req) 
+  {
+    const checkId = (req as any).userId;                  //logged in user's ID
+    // console.log(checkId, "Id of user for BLOG");
+    const isAdmin = (req as any).userRoles;               //logged in user's ROLE
+    // console.log(isAdmin, "Admin for blog GET");
+    const patchBlog = await this.blogService.patch(+id, updateBlogDto, checkId, isAdmin);
     if(!patchBlog)
     {
       throw new Error ("Update Failed! Please Try Again Later.");
@@ -104,8 +113,11 @@ export class BlogController {
 
   @Delete(':id')
   @ApiOkResponse({ type: BlogEntity })
-  async remove(@Param('id') id: string, @Res () res) {
-    const deleteBlog = await this.blogService.remove(+id);
+  async remove(@Param('id') id: string, @Res () res, @Req () req) 
+  {
+    const isAdmin = (req as any).userRoles;               //logged in user's ROLE
+    // console.log(isAdmin, "Admin for blog DELETE");
+    const deleteBlog = await this.blogService.remove(+id, isAdmin);
     if(!deleteBlog)
     {
       throw new Error ("Failed to delete blog of given id!");

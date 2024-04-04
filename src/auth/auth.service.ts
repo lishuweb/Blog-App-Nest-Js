@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { mail } from 'utils/mail';
-import { generateOTP, verifyOTP } from 'utils/otp';
-import { BcryptService } from 'utils/bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { mail } from '../../utils/mail';
+import { generateOTP, verifyOTP } from '../../utils/otp';
+import { BcryptService } from '../../utils/bcrypt';
 import { ChangePasswordDto, ChangePasswordTokenDto, ForgotPasswordDto, LoginAuthDto } from './dto/create-auth.dto';
-import { generateJWT, generateRefreshToken } from 'utils/jwt';
+import { generateJWT, generateRefreshToken } from '../../utils/jwt';
 
 @Injectable()
 export class AuthService {

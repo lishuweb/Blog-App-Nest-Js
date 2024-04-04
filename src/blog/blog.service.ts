@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+// import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 // import { Blog } from './blog.type';
 
 @Injectable()
@@ -35,7 +36,16 @@ export class BlogService {
 
   async findOne(id: number, checkId: number, isAdmin: string)
   {
-    if(checkId === id || isAdmin === "ADMIN")
+    const blogCreatorId = await this.prisma.blog.findUnique({
+      where: {
+        id: id
+      }
+    });
+    // console.log(blogCreatorId, "blogCreatorId");
+
+    // console.log(blogCreatorId.userId, "User Id from Blog Collection");
+
+    if(blogCreatorId.userId === checkId || isAdmin === "ADMIN")
     {
       return await this.prisma.blog.findUnique({
         where: {
@@ -49,29 +59,64 @@ export class BlogService {
     }
   }
 
-  async updateById(id: number, updateBlogDto: UpdateBlogDto)
+  async updateById(id: number, updateBlogDto: UpdateBlogDto, checkId: number, isAdmin: string)
   {
-    return await this.prisma.blog.update({
+    const findBlog = await this.prisma.blog.findUnique({
       where: {
-        id
-      },
-      data: updateBlogDto
+        id: id
+      }
     });
+    console.log(checkId, "check Id");
+    console.log(findBlog, "Find Blog For Update");
+    if(findBlog.userId === checkId || isAdmin === 'ADMIN')
+    {
+      return await this.prisma.blog.update({
+        where: {
+          id
+        },  
+        data: updateBlogDto
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action."); 
+    }
   }
 
-  async patch(id: number, updateBlogDto: UpdateBlogDto) 
+  async patch(id: number, updateBlogDto: UpdateBlogDto, checkId: number, isAdmin: string) 
   {
-    return await this.prisma.blog.update({
-      where: { id },
-      data: updateBlogDto
+    const findBlog = await this.prisma.blog.findUnique({
+      where: {
+        id: id
+      }
     });
+    console.log(findBlog, "Blog for patch");
+    if(findBlog.id === checkId || isAdmin === 'ADMIN')
+    {
+      return await this.prisma.blog.update({
+        where: {
+          id
+        },
+        data: updateBlogDto
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action."); 
+    }
   }
 
-  async remove(id: number) 
+  async remove(id: number, isAdmin: string) 
   {
-    return await this.prisma.blog.delete({
-      where: { id }
-    });
+    if(isAdmin === "ADMIN")
+    {
+      return await this.prisma.blog.delete({
+        where: { id }
+      });
+    }
+    else 
+    {
+      throw new UnauthorizedException("You do not have permission to perform this action."); 
+    }
   }
-
 }
