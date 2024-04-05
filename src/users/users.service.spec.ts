@@ -107,7 +107,7 @@ describe('UsersService', () => {
       const isAdmin = 'ADMIN';
       const prismaFindUniqueSpy = jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(userData);
       const result = await service.findOne(userData.id, isAdmin);
-      console.log(result, "result from find one user");
+      // console.log(result, "result from find one user");
       expect(result).toEqual(userData);
       expect(prismaFindUniqueSpy).toHaveBeenCalledWith({
         where: {
@@ -345,7 +345,7 @@ describe('UsersService', () => {
       const prismaFindUniqueSpy = jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(blockData as user);
       const prismaUpdateSpy = jest.spyOn(prismaService.user, 'update').mockResolvedValue(userData);
       const result = await service.blockUser(userData.id, blockData, isAdmin);
-      console.log(result, "result from block user");
+      // console.log(result, "result from block user");
       expect(result).toEqual(userData);
       expect(prismaFindUniqueSpy).toHaveBeenCalledWith({
         where: {
@@ -358,6 +358,30 @@ describe('UsersService', () => {
         },
         data: blockData
       });
+    });
+
+    it('should throw an error if user is not found', async () => {
+      const wrongId = 123;
+      const isAdmin = 'ADMIN';
+      const blockData = {
+        isArchive: true
+      };
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      await expect(service.blockUser(wrongId, blockData, isAdmin)).rejects.toThrow('User not found');
+    });
+
+    it('should throw an UnauthorizedException if the user is not an admin', async () => {
+      const isAdmin = 'USER';
+      const blockData = {
+        isArchive: true
+      };
+      try{
+        await service.blockUser(userData.id, blockData, isAdmin);
+      }
+      catch(error)
+      {
+        expect(error).toEqual(new UnauthorizedException("You do not have permission to perform this action."));
+      }
     });
   });
 });
