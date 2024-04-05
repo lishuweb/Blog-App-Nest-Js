@@ -12,8 +12,8 @@ export class UsersService {
               private bcrypt: BcryptService  
   ) {}
 
-  async create(createUserDto: CreateUserDto, isAdmin: boolean) {
-    if(isAdmin)
+  async create(createUserDto: CreateUserDto, isAdmin: string) {
+    if(isAdmin === 'ADMIN')
     {
       const passwordHash = await this.bcrypt.bcryptPassword(createUserDto.password);
       const newUser = await this.prisma.user.create({
@@ -27,8 +27,8 @@ export class UsersService {
     }
   }
 
-  async findAll(isAdmin: boolean) {
-    if(isAdmin)
+  async findAll(isAdmin: string) {
+    if(isAdmin === 'ADMIN')
     {
       return await this.prisma.user.findMany({});
     }
@@ -38,8 +38,9 @@ export class UsersService {
     }
   }
 
-  async findOne(id: number, isAdmin: boolean) {
-    if(isAdmin)
+  async findOne(id: number, isAdmin: string) 
+  {
+    if(isAdmin === 'ADMIN')
     {
       return await this.prisma.user.findUnique({
         where: {
@@ -53,9 +54,9 @@ export class UsersService {
     }
   }
 
-  async activeVerified(isAdmin: boolean)
+  async activeVerified(isAdmin: string)
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       return await this.prisma.user.findMany({
         where: {
@@ -70,9 +71,9 @@ export class UsersService {
     }
   }
 
-  async archiveUsers(isAdmin: boolean)
+  async archiveUsers(isAdmin: string)
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       return await this.prisma.user.findMany({
         where: {
@@ -86,9 +87,9 @@ export class UsersService {
     }
   }
 
-  async updateById(id: number, updateUserDto: UpdateUserDto, isAdmin: boolean)
+  async updateById(id: number, updateUserDto: UpdateUserDto, isAdmin: string)
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       return await this.prisma.user.update({
         where: {
@@ -103,9 +104,9 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, isAdmin: boolean) 
+  async update(id: number, updateUserDto: UpdateUserDto, isAdmin: string) 
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       try{
         const foundUser = await this.prisma.user.findUnique({
@@ -133,9 +134,9 @@ export class UsersService {
     }
   }
 
-  async remove(id: number, isAdmin: boolean) 
+  async remove(id: number, isAdmin: string) 
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       try{
         const foundUser = await this.prisma.user.findUnique({
@@ -162,9 +163,9 @@ export class UsersService {
     }
   }
 
-  async blockUser(id: number, details: BlockUserDto, isAdmin: boolean)
+  async blockUser(id: number, details: BlockUserDto, isAdmin: string)
   {
-    if(isAdmin)
+    if(isAdmin === 'ADMIN')
     {
       try{
         const foundUser = await this.prisma.user.findUnique({
@@ -181,7 +182,7 @@ export class UsersService {
             id
           },
           data: {
-            isArchive: details.isActive
+            isArchive: details.isArchive
           }
         });
       }

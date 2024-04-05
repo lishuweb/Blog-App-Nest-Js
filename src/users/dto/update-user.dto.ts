@@ -10,7 +10,7 @@ export class BlockUserDto {
     @ApiProperty({
         description: 'Blocked status',
     })
-    isActive: boolean
+    isArchive: boolean
 
     @IsNumber()
     @IsOptional()

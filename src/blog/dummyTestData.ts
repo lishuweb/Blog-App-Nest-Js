@@ -1,3 +1,6 @@
+import { Role } from "@prisma/client";
+
+// Blog
 export const blogData = {
     id: 1,
     title: "Test Blog Data",
@@ -32,3 +35,55 @@ export const blogCollections = [
     }
 ];
 
+// User
+
+// jest.mock("bcrypt", () => ({
+//     hash: jest.fn().mockResolvedValue("hashedPassword"),
+//     compare: jest.fn().mockResolvedValue(true)
+// }));
+
+export const userData = {
+    id: 1,
+    name: "test",
+    email: "test@gmail.com",
+    password: "Test@12345",
+    image: "1710742896877-5472842.jpg",
+    roles: "USER" as Role,
+    isEmailVerified: true,
+    isActive: true,
+    isArchive: true,
+    createdBy: 0,
+    updatedBy: 0,
+    currentRole: "USER" as Role
+}
+
+export const userCollections = [
+    {
+        id: 1,
+        name: "test1",
+        email: "test1@gmail.com",
+        password: "Test@12345",
+        image: "1710742896877-5472842.jpg",
+        roles: "USER" as Role,
+        isEmailVerified: true,
+        isActive: true,
+        isArchive: true,
+        createdBy: 0,
+        updatedBy: 0,
+        currentRole: "USER" as Role
+    },
+    {
+        id: 2,
+        name: "test2",
+        email: "test2@gmail.com",
+        password: "Test@12345",
+        image: "1710742896877-5472842.jpg",
+        roles: "USER" as Role,
+        isEmailVerified: true,
+        isActive: true,
+        isArchive: true,
+        createdBy: 0,
+        updatedBy: 0,
+        currentRole: "USER" as Role
+    }
+];

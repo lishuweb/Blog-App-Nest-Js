@@ -55,11 +55,11 @@ export class UsersController {
     }
       // const isAdmin = request.roles;
       const isAdmin = (req as any).userRoles;
-      console.log(isAdmin, "isAdmin");
+      // console.log(isAdmin, "isAdmin");
       createUserDto.createdBy = (req as any).userId;
-      console.log((req as any).userId);
+      // console.log((req as any).userId);
       createUserDto.currentRole = (req as any).userRoles;
-      console.log((req as any).userRoles);
+      // console.log((req as any).userRoles);
       const response = await this.usersService.create(createUserDto, isAdmin);
       if(!response)
       {
@@ -77,6 +77,7 @@ export class UsersController {
   async getActiveVerified(@Res () res, @Req() req)
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     const response = await this.usersService.activeVerified(isAdmin);
     if(!response)
     {
@@ -93,6 +94,7 @@ export class UsersController {
   async getArchivedUsers(@Res () res, @Req() req)
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     const response = await this.usersService.archiveUsers(isAdmin);
     if(!response)
     {
@@ -113,6 +115,7 @@ export class UsersController {
   async findAll(@Res () res, @Req() req) 
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     const response = await this.usersService.findAll(isAdmin);
     if(!response)
     {
@@ -129,6 +132,7 @@ export class UsersController {
   async findOne(@Param('id') id: string, @Res () res, @Req() req) 
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     const response = await this.usersService.findOne(+id, isAdmin);
     if(!response)
     {
@@ -145,6 +149,7 @@ export class UsersController {
   async updateById(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req)
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     updateUserDto.createdBy = (req as any).userId;
     updateUserDto.updatedBy = (req as any).userId;
     console.log((req as any).userId);
@@ -164,6 +169,7 @@ export class UsersController {
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res () res, @Req() req) 
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     updateUserDto.createdBy = (req as any).userId;
     updateUserDto.updatedBy = (req as any).userId;
     const response = await this.usersService.update(+id, updateUserDto, isAdmin);
@@ -181,7 +187,8 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   async remove(@Param('id') id: string, @Res() res, @Req() req) 
   {
-    const isAdmin = (req as any).userRoles
+    const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     const response = await this.usersService.remove(+id, isAdmin);
     if(!response)
     {
@@ -198,6 +205,7 @@ export class UsersController {
   async blockUser(@Param('id') id: string, @Body() blockUserDto: BlockUserDto, @Res () res, @Req() req)
   {
     const isAdmin = (req as any).userRoles;
+    console.log(isAdmin, "isAdmin");
     blockUserDto.createdBy = (req as any).userId;
     blockUserDto.updatedBy = (req as any).userId;
     const response = await this.usersService.blockUser(+id, blockUserDto, isAdmin);

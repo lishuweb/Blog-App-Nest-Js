@@ -87,7 +87,7 @@ describe('BlogService', () => {
      
       const prismaFindUniqueSpy = jest.spyOn(prismaService.blog, 'findUnique').mockResolvedValue(blogData);
       const result = await service.findOne(id, checkId, isAdmin);
-      console.log(result, "result from find one blog user");
+      // console.log(result, "result from find one blog user");
       expect(result).toEqual(blogData);
       expect(prismaFindUniqueSpy).toHaveBeenCalledWith({
         where: {
@@ -108,8 +108,8 @@ describe('BlogService', () => {
      
       const prismaFindUniqueSpy = jest.spyOn(prismaService.blog, 'findUnique').mockResolvedValue(expectedBlog);
       const result = await service.findOne(id, checkId, isAdmin);
-      console.log(result, "result from find one blog admin");
-      console.log(blogData, "blogdata");
+      // console.log(result, "result from find one blog admin");
+      // console.log(blogData, "blogdata");
       expect(result).toEqual(expectedBlog);
       expect(prismaFindUniqueSpy).toHaveBeenCalledWith({
         where: {
