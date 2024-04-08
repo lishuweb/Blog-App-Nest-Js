@@ -24,18 +24,8 @@ export class AuthService {
     }
   }
 
-  async create(payload: any) {
-    // const {
-    //   name,
-    //   email,
-    //   image,
-    //   isEmailVerified,
-    //   isActive,
-    //   isArchive,
-    //   createdBy,
-    //   updatedBy
-    // } = payload;
-
+  async create(payload: any) 
+  {
     const passwordHash = await this.bcrypt.bcryptPassword(payload.password);
     const newUser = {
       ...payload, password: passwordHash
@@ -115,7 +105,7 @@ export class AuthService {
     console.log(foundUser, "foundUser");
     if(!foundUser)
     {
-      throw new Error("User  not Found!");
+      throw new Error("User not Found!");
     }
     if(!foundUser.isEmailVerified && !foundUser.isActive)
     {
@@ -139,6 +129,10 @@ export class AuthService {
         accessToken,
         refreshToken
       };
+    }
+    else 
+    {
+      throw new Error("Password did not matched!");
     }
   }
 

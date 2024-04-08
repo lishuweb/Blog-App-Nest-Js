@@ -41,12 +41,17 @@ export const blogCollections = [
 //     hash: jest.fn().mockResolvedValue("hashedPassword"),
 //     compare: jest.fn().mockResolvedValue(true)
 // }));
+jest.mock("bcrypt", () => ({
+    hash: jest.fn().mockResolvedValue("hashedPassword"),
+    compare: jest.fn().mockResolvedValue(true)
+}));
 
 export const userData = {
     id: 1,
     name: "test",
     email: "test@gmail.com",
-    password: "Test@12345",
+    // password: "Test@12345",
+    password: 'hashedPassword',
     image: "1710742896877-5472842.jpg",
     roles: "USER" as Role,
     isEmailVerified: true,
@@ -87,3 +92,13 @@ export const userCollections = [
         currentRole: "USER" as Role
     }
 ];
+
+// Auth
+export const authData = {
+    id: 1,
+    email: "test@gmail.com",
+    token: 123456
+};
+
+export const accessToken = 'JWTAccessToken';
+export const refreshToken = 'JWTRefreshToken';
