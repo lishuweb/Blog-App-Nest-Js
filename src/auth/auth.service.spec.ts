@@ -527,7 +527,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw NotFoundException if user is not found', async () => {
+    it('should throw NotFoundException if auth user is not found', async () => {
       jest.clearAllMocks();
       const data = {
         email: "InvalidEmail",
@@ -592,6 +592,61 @@ describe('AuthService', () => {
         }
       });
       expect(OTP.verifyOTP).toHaveBeenCalledWith("112233");
+    });
+
+    it('should throw NotFoundException if user is not found', async () => {
+      jest.clearAllMocks();
+      const data = {
+        email: userData.email,
+        oldPassword: userData.password,
+        newPassword: "Newpassword@1",
+        token: 123456
+      };
+      jest.spyOn(prismaService.auth, 'findUnique').mockResolvedValue(authData as auth);
+      jest.spyOn(OTP, 'verifyOTP').mockResolvedValue(true);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      try{
+        await service.changePassword(data);
+      }
+      catch(error)
+      {
+        expect(error).toEqual(new NotFoundException(`User not found for email: ${data.email}`));
+      }
+    });
+
+    it('should throw BadRequestException if password does not matches', async () => {
+      jest.clearAllMocks();
+      const data = {
+        email: userData.email,
+        oldPassword: userData.password,
+        newPassword: "Newpassword@1",
+        token: 123456
+      };
+      jest.spyOn(prismaService.auth, 'findUnique').mockResolvedValue(authData as auth);
+      jest.spyOn(OTP, 'verifyOTP').mockResolvedValue(true);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(userData);
+      jest.spyOn(bcrypt, 'comparePassword').mockResolvedValue(true);
+      try{
+        await service.changePassword(data);
+      }
+      catch(error)
+      {
+        expect(error).toEqual(new BadRequestException('Incorrect password.'));
+      }
+      expect(prismaService.auth.findUnique).toHaveBeenCalledWith({
+        where: {
+          email: data.email
+        }
+      });
+      expect(OTP.verifyOTP).toHaveBeenCalledWith("123456");
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: {
+          email: userData.email,
+          isEmailVerified: userData.isEmailVerified,
+          isActive: userData.isActive
+        }
+      });
+      expect(bcrypt.comparePassword).toHaveBeenCalledWith(data.oldPassword, 'hashedPassword');
     });
   });
 });
