@@ -27,6 +27,14 @@ export class UsersService {
     }
   }
 
+  async paginate()
+  {
+    return await this.prisma.user.findMany({
+      skip: 3,
+      take: 4
+    });
+  }
+
   async findAll(isAdmin: string) {
     if(isAdmin === 'ADMIN')
     {

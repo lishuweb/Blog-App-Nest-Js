@@ -72,6 +72,20 @@ export class UsersController {
       });
   }
 
+  @Get('paginate')
+  async getUsers(@Res () res)
+  {
+    const response = await this.usersService.paginate();
+    if(!response)
+      {
+        throw new NotFoundException( "No Active and Verified Users Found!" );
+      }
+      res.json({
+        status: 200,
+        response
+      });
+  }
+
   @Get('activeVerified')
   @ApiResponse({ type: UserEntity })
   async getActiveVerified(@Res () res, @Req() req)
